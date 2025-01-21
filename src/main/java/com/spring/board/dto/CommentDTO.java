@@ -1,14 +1,13 @@
-package com.spring.board.DTO;
-
+package com.spring.board.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class PostDTO {
-    private Long post_id;
-    private String title;
+public class CommentDTO {
+    private Long comment_id;
     private String content;
     private String username;
+    private Long postId;
 }

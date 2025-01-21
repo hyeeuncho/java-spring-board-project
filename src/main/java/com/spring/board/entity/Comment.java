@@ -1,4 +1,4 @@
-package com.spring.board.Entity;
+package com.spring.board.entity;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;

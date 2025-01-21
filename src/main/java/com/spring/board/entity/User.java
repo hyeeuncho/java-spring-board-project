@@ -1,5 +1,4 @@
-package com.spring.board.Entity;
-import java.util.List;
+package com.spring.board.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

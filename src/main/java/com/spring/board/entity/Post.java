@@ -1,7 +1,7 @@
-package com.spring.board.Entity;
+package com.spring.board.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

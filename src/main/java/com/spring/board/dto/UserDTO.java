@@ -1,4 +1,4 @@
-package com.spring.board.DTO;
+package com.spring.board.dto;
 
 import lombok.Builder;
 import lombok.Getter;
