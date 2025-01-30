@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long comment_id;
+    @Column(name = "comment_id")
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
@@ -27,8 +28,8 @@ public class Comment {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Comment(Long comment_id, Post post, User user, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.comment_id = comment_id;
+    public Comment(Long id, Post post, User user, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.post = post;
         this.user = user;
         this.content = content;

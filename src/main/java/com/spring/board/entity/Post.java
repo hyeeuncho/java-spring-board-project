@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_id;
+    @Column(name = "post_id")
+    private Long id;
 
     private String title;
     private String content;
@@ -26,8 +27,8 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Post(Long post_id, String title, String content, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.post_id = post_id;
+    public Post(Long id, String title, String content, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.user = user;
