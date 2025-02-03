@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class PostController {
@@ -51,12 +53,18 @@ public class PostController {
 
     //게시글 작성
     @PostMapping("/post")
-    public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO) {
+    public ResponseEntity<Map<String, Object>> createPost(@RequestBody PostDTO postDTO) {
+        Map<String, Object> response = new HashMap<>();
         try {
             postService.savePost(postDTO);
-            return ResponseEntity.ok("게시글 등록 완료");
+            response.put("success", true);
+            response.put("message", "게시글 등록 완료");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 등록 중 오류 발생");
+            response.put("success", false);
+            response.put("message", "게시글 등록 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 }

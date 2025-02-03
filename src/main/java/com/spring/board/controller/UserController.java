@@ -10,6 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 public class UserController {
     @Autowired
@@ -35,11 +38,20 @@ public class UserController {
     }
     // 회원가입 API
     @PostMapping("/users/register")
-    public ResponseEntity<String> register(@RequestBody UserRegisterDTO userRegisterDTO) {
-        // 사용자 등록
-        userService.register(userRegisterDTO);
-        return ResponseEntity.ok("회원가입 성공");
+    public ResponseEntity<Map<String, Object>> register(@RequestBody UserRegisterDTO userRegisterDTO) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            userService.register(userRegisterDTO);
+            response.put("success", true);
+            response.put("message", "회원가입 성공");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "회원가입 중 오류 발생");
+            return ResponseEntity.status(500).body(response);
+        }
     }
+
 
 
     // 로그인 페이지
@@ -49,13 +61,22 @@ public class UserController {
     }
     // 로그인 API
     @PostMapping("/users/login")
-    public ResponseEntity<String> login(@RequestBody UserRegisterDTO userRegisterDTO, HttpSession session) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserRegisterDTO userRegisterDTO, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
         User user = userService.getUserByUsername(userRegisterDTO.getUsername());
+
         if (user != null && userService.checkPassword(user, userRegisterDTO.getPassword())) {
-            session.setAttribute("user",user); //세션에 저장.
-            return ResponseEntity.ok("로그인 성공");
+            session.setAttribute("user", user);
+
+            response.put("success", true);
+            response.put("message", "로그인 성공");
+
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(401).body("잘못된 비밀번호");
+            response.put("success", false);
+            response.put("message", "잘못된 비밀번호");
+            return ResponseEntity.status(401).body(response);
         }
     }
+
 }
