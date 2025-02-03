@@ -10,21 +10,21 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")  // DB 컬럼명은 여전히 user_id로 사용할 수 있습니다.
+    @Column(name = "user_id")
     private Long id;
 
     private String name;
-    private String nickname;
+    private String username;
     private String email;
 
     @Column(nullable = false)
     private String password;
 
     @Builder
-    public User(Long id, String name, String nickname, String email, String password) {
+    public User(Long id, String name, String username, String email, String password) {
         this.id = id;
         this.name = name;
-        this.nickname = nickname;
+        this.username = username;
         this.email = email;
         this.password = password;
     }

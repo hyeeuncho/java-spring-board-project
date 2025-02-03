@@ -23,8 +23,11 @@ public class SecurityConfig{
                         .loginPage("/login")  // 로그인 페이지 설정
                         .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll);  // 로그아웃 허용
-
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/index")
+                        .permitAll()
+                );
         return http.build();
     }
 
