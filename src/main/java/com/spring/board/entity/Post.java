@@ -26,6 +26,17 @@ public class Post {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     @Builder
     public Post(Long id, String title, String content, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

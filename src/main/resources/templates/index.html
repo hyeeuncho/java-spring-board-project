@@ -3,35 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index Page</title>
+    <title>Board Main Page</title>
     <style>
         a {
             text-decoration: none;
         }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #f4f4f4;
+        }
+        .board-list {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-<h1>Welcome to the Board</h1>
-
-<!-- 로그인한 사용자가 있을 경우 -->
-<h2 th:if="${username != null}" th:text="${username} + '님'"></h2>
-
-<!-- 로그인하지 않은 경우 -->
-<h2 th:if="${username == null}">로그인 하세요</h2>
-
-<!-- 회원가입 -->
-<a href="/users/register" th:if="${username == null}">
-    <button>회원가입</button>
+<div class="navbar">
+    <div>
+        <h1>Board</h1>
+    </div>
+    <div>
+        <span th:if="${username != null}" th:text="${username} + '님'" style="margin-right: 15px;"></span>
+        <a href="/users/register" th:if="${username == null}">
+            <button>회원가입</button>
+        </a>
+        <a th:if="${username == null}" href="/users/login">
+            <button>로그인</button>
+        </a>
+        <a th:if="${username != null}" href="/logout">
+            <button>로그아웃</button>
+        </a>
+    </div>
+</div>
+<a href="/post/form">
+    <button>게시글 작성</button>
 </a>
-
-<!-- 로그인 / 로그아웃 버튼 -->
-<a th:if="${username == null}" href="/users/login">
-    <button>로그인</button>
-</a>
-
-<a th:if="${username != null}" href="/logout">
-    <button>로그아웃</button>
-</a>
-
+<div class="board-list">
+    <h2>게시판 목록</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>수정일</th>
+        </tr>
+        </thead>
+        <tbody id="post-list">
+        </tbody>
+    </table>
+</div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/posts")
+            .then(response => response.json())
+            .then(posts => {
+                let postList = document.getElementById("post-list");
+                postList.innerHTML = posts.map(post => `
+                    <tr>
+                        <td>${post.id}</td>
+                        <td><a href="/post/${post.id}">${post.title}</a></td>
+                        <td>${post.user.username}</td>
+                        <td>${new Date(post.createdAt).toLocaleDateString()}</td>
+                        <td>${new Date(post.updatedAt).toLocaleDateString()}</td>
+                    </tr>
+                `).join("");
+            })
+            .catch(error => console.error("게시글을 불러오는 중 오류 발생:", error));
+    });
+</script>
 </html>

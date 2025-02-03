@@ -1,8 +1,11 @@
 package com.spring.board.service;
 
+import com.spring.board.dto.PostDTO;
+import com.spring.board.entity.User;
 import com.spring.board.repository.PostRepository;
 import com.spring.board.entity.Post;
 
+import com.spring.board.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -12,6 +15,9 @@ import java.util.Optional;
 public class PostService {
     @Autowired
     PostRepository postRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     // 게시글 ID로 게시글 찾기
     public Optional<Post> getPostById(Long id) {
@@ -29,7 +35,14 @@ public class PostService {
     }
 
     // 게시글 저장
-    public Post savePost(Post post) {
+    public Post savePost(PostDTO postDTO) {
+        User user = userRepository.findById(postDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        Post post = Post.builder()
+                .title(postDTO.getTitle())
+                .content(postDTO.getContent())
+                .user(user)
+                .build();
         return postRepository.save(post);
     }
 
