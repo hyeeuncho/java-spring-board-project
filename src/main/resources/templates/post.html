@@ -1,10 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 상세</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px;
+        }
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            border-bottom: 4px solid #ddd;
+            padding-bottom: 15px;
+        }
+        .content {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
+
+<div class="container">
+    <div class="title" th:text="'📌 ' + ${post.title}"></div>
+    <div class="user" th:text="'✍ 작성자: ' + ${username}"></div>
+    <div class="date" th:text="'🕒 작성일: ' + ${post.createdAt} + ' | 수정일: ' + ${post.updatedAt}"></div>
+    <div class="content" th:text="${post.content}"></div>
+</div>
 
 </body>
 </html>

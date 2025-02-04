@@ -5,15 +5,14 @@ import com.spring.board.dto.PostDTO;
 import com.spring.board.entity.Post;
 import com.spring.board.entity.User;
 import com.spring.board.service.PostService;
+import com.spring.board.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +22,10 @@ import java.util.Map;
 public class PostController {
     @Autowired
     PostService postService;
+    @Autowired
+    UserService userService;
 
-    //게시글 조회
+    // 게시글 조회
     @GetMapping("/posts")
     public ResponseEntity<List<Post>> getAllPosts() {
         try {
@@ -38,9 +39,29 @@ public class PostController {
         }
     }
 
+    // 게시글 상세
+    @GetMapping("/post/{postId}")
+    public String getPost(@PathVariable Long postId, Model model) {
+        try {
+            Post post = postService.getPostById(postId).orElse(null);
+            if (post != null) {
+                String username = post.getUser().getUsername();
+
+                model.addAttribute("post", post);
+                model.addAttribute("username", username);
+                return "post";
+            } else {
+                model.addAttribute("error", "게시글을 찾을 수 없습니다.");
+                return "post";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "게시글 조회 중 오류 발생");
+            return "post";
+        }
+    }
 
     // 게시글 작성 폼
-    @GetMapping("/post/form")
+    @GetMapping("/post")
     public String showPostForm(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user != null){
@@ -51,7 +72,7 @@ public class PostController {
         return "postForm";
     }
 
-    //게시글 작성
+    // 게시글 작성
     @PostMapping("/post")
     public ResponseEntity<Map<String, Object>> createPost(@RequestBody PostDTO postDTO) {
         Map<String, Object> response = new HashMap<>();
