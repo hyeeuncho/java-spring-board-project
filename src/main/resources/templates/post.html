@@ -40,6 +40,7 @@
             color: #333;
             white-space: pre-wrap;
             margin-top: 30px;
+            margin-bottom: 30px;
         }
     </style>
 </head>
@@ -50,7 +51,34 @@
     <div class="user" th:text="'✍ 작성자: ' + ${username}"></div>
     <div class="date" th:text="'🕒 작성일: ' + ${post.createdAt} + ' | 수정일: ' + ${post.updatedAt}"></div>
     <div class="content" th:text="${post.content}"></div>
+    <div class="btn" th:if="${post.user.id == user}">
+        <a th:href="|/post/form/${post.id}|">
+            <button>수정</button>
+        </a>
+        <button th:onclick="|deletePost(${post.id})|">삭제</button>
+    </div>
 </div>
-
 </body>
+<script>
+    function deletePost(postId){
+        fetch(`/post/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '/index';
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('게시글 삭제 중 오류 발생:', error);
+        });
+    }
+</script>
 </html>

@@ -41,14 +41,16 @@ public class PostController {
 
     // 게시글 상세
     @GetMapping("/post/{postId}")
-    public String getPost(@PathVariable Long postId, Model model) {
+    public String getPost(@PathVariable Long postId, Model model,HttpSession session) {
         try {
             Post post = postService.getPostById(postId).orElse(null);
+            User user = (User) session.getAttribute("user");
             if (post != null) {
                 String username = post.getUser().getUsername();
 
                 model.addAttribute("post", post);
                 model.addAttribute("username", username);
+                model.addAttribute("user", user.getId());
                 return "post";
             } else {
                 model.addAttribute("error", "게시글을 찾을 수 없습니다.");
@@ -86,6 +88,30 @@ public class PostController {
             response.put("message", "게시글 등록 중 오류 발생");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("post/{postId}")
+    public ResponseEntity<Map<String,Object>> deletePost(@PathVariable Long postId){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            postService.deletePost(postId);
+            response.put("success", true);
+            response.put("message", "게시글 삭제 완료");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "게시글 삭제 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // 게시글 수정 폼
+    @GetMapping("post/form/{postId}")
+    String showUpdateForm(@PathVariable Long postId, Model model){
+        Post post = postService.getPostById(postId).orElse(null);
+        model.addAttribute("post", post);
+        return "postUpdateForm";
     }
 
 }
