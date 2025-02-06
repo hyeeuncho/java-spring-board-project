@@ -2,6 +2,7 @@ package com.spring.board.controller;
 
 
 import com.spring.board.dto.PostDTO;
+import com.spring.board.dto.PostUpdateDTO;
 import com.spring.board.entity.Post;
 import com.spring.board.entity.User;
 import com.spring.board.service.PostService;
@@ -113,5 +114,36 @@ public class PostController {
         model.addAttribute("post", post);
         return "postUpdateForm";
     }
+
+    // 게시글 수정 - 전체
+    @PutMapping("post/{postId}")
+    public ResponseEntity<Map<String,Object>> updatePostAll(@PathVariable Long postId, @RequestBody PostUpdateDTO postUpdateDTO){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            postService.updatePost(postId, postUpdateDTO);
+            response.put("success", true);
+            response.put("message", "게시글 수정 완료");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "게시글 수정 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    // 게시글 수정 - 부분
+    @PatchMapping("post/{postId}")
+    public ResponseEntity<Map<String,Object>> updatePost(){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response.put("success", true);
+            response.put("message", "게시글 수정 완료");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "게시글 수정 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 }
