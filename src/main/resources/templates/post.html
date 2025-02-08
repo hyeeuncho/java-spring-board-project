@@ -42,6 +42,10 @@
             margin-top: 30px;
             margin-bottom: 30px;
         }
+        .edit-form {
+            display: none;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -61,15 +65,15 @@
         <h3>💬 댓글</h3>
         <div id="comment-list">
             <div th:each="comment : ${comments}" class="comment">
-                <p class="comment-user" th:text="'👤 ' + ${comment.user.username}"></p>
-                <p class="comment-content" th:text="${comment.content}"></p>
-                <p class="comment-date" th:text="${comment.createdAt}"></p>
-                <div class="btn" th:if="${comment.user.id == user}">
+                <p class="comment-user" th:text="'👤 ' + ${comment.user.username}" th:id="'comment-user-' + ${comment.id}"></p>
+                <p class="comment-content" th:text="${comment.content}" th:id="'comment-content-' + ${comment.id}"></p>
+                <p class="comment-date" th:text="${comment.createdAt}" th:id="'comment-date-' + ${comment.id}"></p>
+                <div class="btn" th:if="${comment.user.id == user}" id="btn">
                     <button th:data-id="${comment.id}" th:data-content="${comment.content}" onclick="editComment(this)">수정</button>
                     <button th:onclick="|deleteComment(${comment.id},${post.id})|">삭제</button>
                 </div>
-                <div th:id="edit-form" class="edit-form" style="display: none;">
-                    <textarea th:id="edit-content" required></textarea>
+                <div th:id="'edit-form-' + ${comment.id}" class="edit-form">
+                    <textarea th:id="'edit-content-' + ${comment.id}" required></textarea>
                     <button th:data-comment-id="${comment.id}" th:data-post-id="${post.id}" onclick="updateComment(this)">수정</button>
                 </div>
             </div>
@@ -90,14 +94,28 @@
         const commentId = button.getAttribute('data-id');
         const content = button.getAttribute('data-content');
 
-        // 수정 폼 보이기
-        const editForm = document.getElementById('edit-form');
+        // 기존 댓글, 버튼 없애기
+        const origin = document.getElementById('comment-content-' + commentId);
+        if (origin) {
+            origin.style.display = 'none';
+        }
+        const date = document.getElementById('comment-date-' + commentId);
+        if (date) {
+            date.style.display = 'none';
+        }
+        const btn = document.getElementById('btn');
+        if (btn) {
+            btn.style.display = 'none';
+        }
+
+        // 수정 폼
+        const editForm = document.getElementById('edit-form-' + commentId);
         if (editForm) {
             editForm.style.display = 'block';
         }
 
-        // 수정할 댓글 내용 텍스트 에어리어에 채우기
-        const editContent = document.getElementById('edit-content');
+        // 기존 댓글 내용
+        const editContent = document.getElementById('edit-content-' + commentId);
         if (editContent) {
             editContent.value = content;
         }
@@ -109,7 +127,8 @@
     function updateComment(button){
         const commentId = button.getAttribute('data-comment-id');
         const postId = button.getAttribute('data-post-id');
-        const content = document.getElementById('edit-content').value;
+        const content = document.getElementById('edit-content-' + commentId).value;
+
         if (content.trim() === "") {
             alert("댓글 내용을 입력해주세요.");
             return;
