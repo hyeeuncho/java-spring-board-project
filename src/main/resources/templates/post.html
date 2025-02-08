@@ -57,9 +57,89 @@
         </a>
         <button th:onclick="|deletePost(${post.id})|">삭제</button>
     </div>
+    <div class="comment-container">
+        <h3>💬 댓글</h3>
+        <div id="comment-list">
+            <div th:each="comment : ${comments}" class="comment">
+                <p class="comment-user" th:text="'👤 ' + ${comment.user.username}"></p>
+                <p class="comment-content" th:text="${comment.content}"></p>
+                <p class="comment-date" th:text="${comment.createdAt}"></p>
+                <div class="btn" th:if="${comment.user.id == user}">
+                    <a th:href="|/post/form/${post.id}|">
+                        <button>수정</button>
+                    </a>
+                    <button th:onclick="|deleteComment(${comment.id},${post.id})|">삭제</button>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <div class="comment-form">
+            <textarea id="comment-content" placeholder="댓글을 입력하세요..." required></textarea>
+            <div id="content-error" class="error-message"></div>
+            <button th:onclick="|addComment(${post.id},${user})|">댓글 작성</button>
+        </div>
+    </div>
+
 </div>
 </body>
 <script>
+    function addComment(postId, userId){
+        const content = document.getElementById('comment-content').value;
+        const error = document.getElementById("content-error");
+        if (content.trim() === "") {
+            error.innerText = "내용을 입력해주세요.";
+            return;
+        }
+        if (!userId) {
+            error.innerText = "로그인 후 댓글을 작성해주세요.";
+            return;
+        }
+        let commentData = {
+            content: content,
+            userId: userId,
+            postId: postId
+        }
+        fetch('/comment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(commentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = `/post/${postId}`;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('댓글 작성 중 오류 발생:', error);
+            alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+        });
+    }
+    function deleteComment(commentId,postId){
+        fetch(`/comment/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = `/post/${postId}`;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('댓글 삭제 중 오류 발생:', error);
+        });
+    }
     function deletePost(postId){
         fetch(`/post/${postId}`, {
             method: 'DELETE',
@@ -80,5 +160,6 @@
             console.error('게시글 삭제 중 오류 발생:', error);
         });
     }
+
 </script>
 </html>

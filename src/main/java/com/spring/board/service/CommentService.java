@@ -1,7 +1,13 @@
 package com.spring.board.service;
 
+import com.spring.board.dto.CommentDTO;
 import com.spring.board.entity.Comment;
+import com.spring.board.entity.Post;
+import com.spring.board.entity.User;
 import com.spring.board.repository.CommentRepository;
+import com.spring.board.repository.PostRepository;
+import com.spring.board.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,17 +15,12 @@ import java.util.Optional;
 
 @Service
 public class CommentService {
-
-    private final CommentRepository commentRepository;
-
-    public CommentService(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
-    }
-
-    // 댓글 ID로 댓글 찾기
-    public Optional<Comment> getCommentById(Long id) {
-        return commentRepository.findById(id);
-    }
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    CommentRepository commentRepository;
+    @Autowired
+    PostRepository postRepository;
 
     // 특정 게시글에 대한 모든 댓글 찾기
     public List<Comment> getCommentsByPostId(Long postId) {
@@ -27,8 +28,17 @@ public class CommentService {
     }
 
     // 댓글 저장
-    public Comment saveComment(Comment comment) {
-        return commentRepository.save(comment);
+    public void saveComment(CommentDTO commentDTO) {
+        User user = userRepository.findById(commentDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        Post post = postRepository.findById(commentDTO.getPostId())
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+        Comment comment = Comment.builder()
+                .content(commentDTO.getContent())
+                .user(user)
+                .post(post)
+                .build();
+        commentRepository.save(comment);
     }
 
     // 댓글 삭제
