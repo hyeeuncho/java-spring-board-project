@@ -65,10 +65,12 @@
                 <p class="comment-content" th:text="${comment.content}"></p>
                 <p class="comment-date" th:text="${comment.createdAt}"></p>
                 <div class="btn" th:if="${comment.user.id == user}">
-                    <a th:href="|/post/form/${post.id}|">
-                        <button>수정</button>
-                    </a>
+                    <button th:data-id="${comment.id}" th:data-content="${comment.content}" onclick="editComment(this)">수정</button>
                     <button th:onclick="|deleteComment(${comment.id},${post.id})|">삭제</button>
+                </div>
+                <div th:id="edit-form" class="edit-form" style="display: none;">
+                    <textarea th:id="edit-content" required></textarea>
+                    <button th:data-comment-id="${comment.id}" th:data-post-id="${post.id}" onclick="updateComment(this)">수정</button>
                 </div>
             </div>
         </div>
@@ -83,6 +85,63 @@
 </div>
 </body>
 <script>
+    let editingCommentId = null;
+    function editComment(button){
+        const commentId = button.getAttribute('data-id');
+        const content = button.getAttribute('data-content');
+
+        // 수정 폼 보이기
+        const editForm = document.getElementById('edit-form');
+        if (editForm) {
+            editForm.style.display = 'block';
+        }
+
+        // 수정할 댓글 내용 텍스트 에어리어에 채우기
+        const editContent = document.getElementById('edit-content');
+        if (editContent) {
+            editContent.value = content;
+        }
+
+        // 수정 중인 댓글 ID 저장
+        editingCommentId = commentId;
+    }
+
+    function updateComment(button){
+        const commentId = button.getAttribute('data-comment-id');
+        const postId = button.getAttribute('data-post-id');
+        const content = document.getElementById('edit-content').value;
+        if (content.trim() === "") {
+            alert("댓글 내용을 입력해주세요.");
+            return;
+        }
+
+        let commentData = {
+            commentId: commentId,
+            content: content,
+            postId: postId
+        };
+
+        fetch(`/comment/${commentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(commentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("댓글이 수정되었습니다.");
+                window.location.href = `/post/${postId}`;
+            } else {
+                alert("댓글 수정에 실패했습니다.");
+            }
+        })
+        .catch(error => {
+            console.error('댓글 수정 중 오류 발생:', error);
+            alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
+        });
+    }
     function addComment(postId, userId){
         const content = document.getElementById('comment-content').value;
         const error = document.getElementById("content-error");
@@ -120,6 +179,7 @@
             alert('서버 오류가 발생했습니다. 다시 시도해주세요.');
         });
     }
+
     function deleteComment(commentId,postId){
         fetch(`/comment/${commentId}`, {
             method: 'DELETE',
@@ -140,6 +200,7 @@
             console.error('댓글 삭제 중 오류 발생:', error);
         });
     }
+
     function deletePost(postId){
         fetch(`/post/${postId}`, {
             method: 'DELETE',

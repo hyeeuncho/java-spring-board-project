@@ -1,6 +1,7 @@
 package com.spring.board.controller;
 
 import com.spring.board.dto.CommentDTO;
+import com.spring.board.dto.CommentUpdateDTO;
 import com.spring.board.dto.PostDTO;
 import com.spring.board.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,22 @@ public class CommentController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "댓글 삭제 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // 댓글 수정
+    @PutMapping("comment/{commentId}")
+    public ResponseEntity<Map<String,Object>> updateComment(@PathVariable Long commentId, @RequestBody CommentUpdateDTO commentUpdateDTO){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            commentService.updateComment(commentId,commentUpdateDTO);
+            response.put("success", true);
+            response.put("message", "댓글 수정 완료");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "댓글 수정 중 오류 발생");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

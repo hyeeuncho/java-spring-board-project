@@ -1,6 +1,7 @@
 package com.spring.board.service;
 
 import com.spring.board.dto.CommentDTO;
+import com.spring.board.dto.CommentUpdateDTO;
 import com.spring.board.entity.Comment;
 import com.spring.board.entity.Post;
 import com.spring.board.entity.User;
@@ -44,5 +45,17 @@ public class CommentService {
     // 댓글 삭제
     public void deleteComment(Long id) {
         commentRepository.deleteById(id);
+    }
+
+    // 댓글 수정
+    public void updateComment(Long commentId, CommentUpdateDTO commentUpdateDTO){
+        Comment comment = commentRepository.findById(commentUpdateDTO.getCommentId()).orElse(null);
+        if (comment != null){
+            if (commentUpdateDTO.getContent() != null){
+                comment.setContent(commentUpdateDTO.getContent());
+                comment.preUpdate();
+            }
+            commentRepository.save(comment);
+        }
     }
 }
